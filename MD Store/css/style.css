@@ -1,0 +1,109 @@
+body { font-family: 'Cairo', sans-serif; }
+        .font-sans-title { font-family: 'Montserrat', 'Cairo', sans-serif; }
+
+.hero-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 600ms ease, visibility 0s linear 600ms;
+}
+
+.hero-slide.hero-slide-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 600ms ease;
+}
+
+.hero-indicator {
+    width: 9px;
+    height: 9px;
+    border-radius: 9999px;
+    background: rgb(148 163 184 / 0.55);
+    transition: width 250ms ease, background-color 250ms ease;
+}
+
+.hero-indicator[aria-current="true"] {
+    width: 26px;
+    background: var(--theme-primary, #22d3ee);
+}
+
+.landing-product-card {
+    flex: 0 0 min(86vw, 330px);
+    scroll-snap-align: start;
+}
+
+.landing-scroll-target {
+    scroll-margin-top: 6.5rem;
+}
+
+#offers-products-grid,
+#modified-games-grid {
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-primary, rgb(34 211 238 / 0.55)) var(--theme-raised, rgb(15 23 42 / 0.8));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-slide,
+    .hero-slide.hero-slide-active,
+    .hero-indicator {
+        transition-duration: 0.01ms;
+    }
+}
+
+        .tab-active {
+            color: var(--theme-primary, #22d3ee);
+            border-bottom: 2px solid var(--theme-primary, #22d3ee);
+            background-color: var(--theme-raised, rgba(15, 23, 42, 0.6));
+        }
+        
+        .glass-card {
+            background: var(--theme-card, rgba(15, 23, 42, 0.75));
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--theme-border, rgba(255, 255, 255, 0.1));
+        }
+
+        /* Animations */
+        .anim-text-top {
+            opacity: 0;
+            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s;
+        }
+
+        .anim-title-main {
+            opacity: 0;
+            animation: zoomInReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.4s;
+        }
+
+        .anim-controller {
+            opacity: 0;
+            transform: translateY(180px) rotate(-15deg) scale(0.85);
+            animation: 
+                controllerRise 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.6s,
+                controllerFloat 4s ease-in-out infinite 1.8s;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes zoomInReveal {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes controllerRise {
+            0% { opacity: 0; transform: translateY(180px) rotate(-15deg) scale(0.85); }
+            100% { opacity: 1; transform: translateY(0) rotate(-15deg) scale(1); }
+        }
+
+        @keyframes controllerFloat {
+            0%, 100% { transform: translateY(0px) rotate(-15deg); }
+            50% { transform: translateY(-14px) rotate(-12deg); }
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }

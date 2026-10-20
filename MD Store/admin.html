@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <script>
+        (() => { const allowed = ['midnight-navy', 'cream-coral', 'warm-minimal']; try { const saved = localStorage.getItem('mdstore-theme'); document.documentElement.dataset.theme = allowed.includes(saved) ? saved : 'midnight-navy'; } catch (_) { document.documentElement.dataset.theme = 'midnight-navy'; } })();
+    </script>
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/theme.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MD Store | لوحة تحكم الأدمن</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950">
+
+    <!-- ADMIN LOGIN MODAL / OVERLAY -->
+    <div id="admin-login-overlay" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-6 text-center">
+            <div class="flex justify-center">
+                <div class="p-3 bg-slate-950 rounded-2xl border border-cyan-500/30">
+                    <img src="logo.jpeg" alt="MD Store" class="h-12 w-auto object-contain rounded-lg" onerror="this.src='https://via.placeholder.com/50'">
+                </div>
+            </div>
+            <div>
+                <h2 class="text-xl font-black text-cyan-400">تسجيل دخول الأدمن</h2>
+                <p class="text-xs text-slate-400 mt-1">أدخل بيانات الإدارة للوصول للوحة التحكم</p>
+            </div>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-right text-xs">
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300">اسم المستخدم</label>
+                    <input type="text" id="admin-user" required placeholder="admin" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300">كلمة السر</label>
+                    <input type="password" id="admin-pass" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-cyan-500">
+                </div>
+                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>دخول للوحة التحكم</span>
+                </button>
+            </form>
+            <p class="text-[11px] text-slate-500">البيانات الافتراضية: admin / admin123</p>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="p-1.5 bg-slate-950 rounded-xl border border-cyan-500/30">
+                    <img src="logo.jpeg" alt="MD Store" class="h-10 w-auto object-contain rounded-lg" onerror="this.src='https://via.placeholder.com/40'">
+                </div>
+                <div>
+                    <h1 class="text-xl font-black text-cyan-400">MD STORE - لوحة الإدارة الشاملة</h1>
+                    <p class="text-xs text-slate-400">إدارة المنتجات، وسجل نشاطات العملاء، الشات والمحادثات المباشرة</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="theme-picker" data-theme-picker>
+                    <button type="button" class="theme-picker-trigger" data-theme-toggle aria-label="تغيير ألوان الموقع" title="تغيير ألوان الموقع"><i class="fa-solid fa-palette" aria-hidden="true"></i></button>
+                </div>
+                <button onclick="adminLogout()" class="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white px-3 py-2 rounded-xl text-xs border border-red-500/30 transition">
+                    <i class="fa-solid fa-power-off"></i> خروج
+                </button>
+                <a href="MD.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold border border-slate-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-store"></i>
+                    <span>العودة للمتجر</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+        <!-- 1. FORM: ADD NEW PRODUCT -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+            <h2 class="text-lg font-bold mb-4 text-cyan-400 flex items-center gap-2">
+                <i class="fa-solid fa-square-plus"></i> إضافة منتج جديد
+            </h2>
+
+            <form id="add-product-form" onsubmit="handleAddProduct(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold mb-1 text-slate-300">اسم المنتج</label>
+                    <input type="text" id="prod-name" required placeholder="مثال: ذراع تحكم PS5 DualSense" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1 text-slate-300">السعر (بالجنيه)</label>
+                    <input type="number" step="0.01" min="0" id="prod-price" required placeholder="مثال: 3500" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <label class="flex items-center gap-2 text-xs text-slate-300"><input id="prod-requires-variants" type="checkbox" onchange="toggleVariantPriceRequirement('prod')" class="accent-cyan-400"> Requires options / يتطلب خيارات بسعر لكل خيار</label>
+                <label class="flex items-center gap-2 text-xs text-slate-300"><input id="prod-is-active" type="checkbox" checked class="accent-cyan-400"> Active in store / نشط في المتجر</label>
+                <label class="flex items-center gap-2 text-xs text-slate-300"><input id="prod-modified-games" type="checkbox" class="accent-cyan-400"> Show in Modified-Console Games Section / عرض في قسم ألعاب الأجهزة المعدّلة</label>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1 text-slate-300">الكمية المتاحة (المخزون)</label>
+                    <input type="number" id="prod-stock" required placeholder="مثال: 10" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1 text-slate-300">القسم (Category)</label>
+                    <select id="prod-category" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500 text-slate-100">
+                        <option value="Consoles">أجهزة (Consoles)</option>
+                        <option value="Controllers">ذراعات تحكم (Controllers)</option>
+                        <option value="Accessories">إكسسوارات (Accessories)</option>
+                        <option value="Games">ألعاب (Games)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1 text-slate-300">شارة البار الأزرق (اختياري)</label>
+                    <input type="text" id="prod-badge" placeholder="مثال: PS5 أو PS4 / PS5 (اتركه فارغاً لإخفائه)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1 text-slate-300">اختيار صورة المنتج من الجهاز</label>
+                    <input type="file" id="prod-image-file" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 focus:outline-none focus:border-cyan-500 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-cyan-500/10 file:text-cyan-400 hover:file:bg-cyan-500/20 cursor-pointer">
+                </div>
+
+                <div class="md:col-span-2 lg:col-span-3">
+                    <label class="block text-xs font-semibold mb-1 text-slate-300">وصف المنتج</label>
+                    <input type="text" id="prod-desc" placeholder="وصف قصير للمنتج والضمان..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div class="col-span-full pt-2">
+                    <button type="submit" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-lg shadow-cyan-500/20 flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>حفظ وإضافة المنتج</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Homepage banners -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-lg font-bold text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-images"></i> Homepage banners / بنرات الصفحة الرئيسية</h2>
+                    <p class="text-xs text-slate-400 mt-1">Manage up to 3 extra hero slides. The original hero stays fixed. / إدارة 3 بنرات إضافية كحد أقصى، مع بقاء البانر الأصلي ثابتاً.</p>
+                </div>
+                <button id="add-homepage-banner-btn" onclick="openHomepageBannerModal()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition"><i class="fa-solid fa-plus"></i> Add banner / إضافة بانر</button>
+            </div>
+            <p id="homepage-banner-count" class="text-[11px] text-slate-500"></p>
+            <div id="homepage-banners-list" class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <p class="text-xs text-slate-500">Sign in to load homepage banners. / سجّل الدخول لعرض البنرات.</p>
+            </div>
+        </section>
+
+        <!-- 2. TABLE: MANAGE EXISTING PRODUCTS -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check"></i> المنتجات الحالية في قاعدة البيانات
+                </h2>
+                <button onclick="loadAdminProducts()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-xl text-xs border border-slate-700">
+                    <i class="fa-solid fa-rotate-right"></i> تحديث القائمة
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                        <tr>
+                            <th class="p-3">ID</th>
+                            <th class="p-3">الصورة</th>
+                            <th class="p-3">اسم المنتج</th>
+                            <th class="p-3">السعر</th>
+                            <th class="p-3">المخزون</th>
+                            <th class="p-3">القسم</th>
+                            <th class="p-3">الشارة</th>
+                            <th class="p-3 text-center">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-products-table" class="divide-y divide-slate-800/60">
+                        <tr>
+                            <td colspan="8" class="text-center py-8 text-slate-500">جاري تحميل المنتجات...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Store Orders -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between gap-3">
+                <h2 class="text-lg font-bold text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-receipt"></i> طلبات المتجر / Store Orders</h2>
+                <button onclick="loadAdminOrders()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-xl text-xs border border-slate-700">تحديث / Refresh</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-xs min-w-[900px]">
+                    <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                        <tr><th class="p-3">رقم / ID</th><th class="p-3">التاريخ / Date</th><th class="p-3">العميل / Customer</th><th class="p-3">التوصيل / Delivery</th><th class="p-3">العناصر / Items</th><th class="p-3">الإجمالي / Total</th><th class="p-3">الدفع / Payment</th><th class="p-3">الحالة / Status</th><th class="p-3">تحديث / Update</th></tr>
+                    </thead>
+                    <tbody id="admin-orders-table" class="divide-y divide-slate-800/60">
+                        <tr><td colspan="9" class="text-center py-8 text-slate-500">جارٍ تحميل الطلبات / Loading orders...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 3. TABLE: MASTER USERS & ACTIVITY HUB -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-users"></i> سجل العملاء الشامل (الصيانة، التقييم، والاهتمامات)
+                </h2>
+                <button onclick="loadAdminUsers()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-xl text-xs border border-slate-700">
+                    <i class="fa-solid fa-rotate-right"></i> تحديث سجل العملاء
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                        <tr>
+                            <th class="p-3">ID</th>
+                            <th class="p-3">اسم العميل</th>
+                            <th class="p-3">البريد الإلكتروني</th>
+                            <th class="p-3">رقم الهاتف</th>
+                            <th class="p-3">العنوان</th>
+                            <th class="p-3 text-center">طلبات الصيانة</th>
+                            <th class="p-3 text-center">طلبات التقييم/البيع</th>
+                            <th class="p-3 text-center">سجل البحث والاهتمام</th>
+                            <th class="p-3 text-center">إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-table" class="divide-y divide-slate-800/60">
+                        <tr>
+                            <td colspan="9" class="text-center py-8 text-slate-500">جاري تحميل العملاء والسجلات...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between gap-3">
+                <h2 class="text-lg font-bold text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-star text-amber-400"></i> تقييمات المنتجات</h2>
+                <button type="button" onclick="loadAdminRatings()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-xl text-xs border border-slate-700"><i class="fa-solid fa-rotate-right"></i> تحديث</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-xs min-w-[700px]">
+                    <thead class="bg-slate-950 text-slate-400 border-b border-slate-800"><tr><th class="p-3">العميل</th><th class="p-3">المنتج</th><th class="p-3">النجوم</th><th class="p-3">التعليق</th><th class="p-3">التاريخ</th><th class="p-3">إجراء</th></tr></thead>
+                    <tbody id="admin-ratings-table" class="divide-y divide-slate-800/60"><tr><td colspan="6" class="text-center py-6 text-slate-500">سجّل الدخول لعرض التقييمات.</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 💬 FLOATING ADMIN CHAT TRIGGER BUTTON -->
+    <div class="fixed bottom-6 left-6 z-50">
+        <button onclick="toggleAdminChatWidget()" id="admin-chat-toggle-btn" class="relative bg-cyan-500 hover:bg-cyan-400 text-slate-950 p-4 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center border-2 border-cyan-300/40 group">
+            <i class="fa-solid fa-comments text-2xl"></i>
+            <span id="admin-chat-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-950">0</span>
+        </button>
+    </div>
+
+    <!-- 💬 FLOATING ADMIN CHAT MODAL / WIDGET -->
+    <div id="admin-chat-modal" class="hidden fixed bottom-24 left-6 z-50 w-[92vw] sm:w-[850px] h-[560px] bg-slate-900/95 border border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl transition-all">
+        <!-- Modal Header -->
+        <div class="bg-slate-950 p-3.5 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-cyan-500/10 rounded-xl border border-cyan-500/20 text-cyan-400">
+                    <i class="fa-solid fa-headset text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-100">محادثات العملاء والأسئلة المباشرة</h3>
+                    <p class="text-[10px] text-slate-400">التواصل المباشر والرد على استفسارات الزوار والعملاء</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="loadAdminChats()" class="text-slate-400 hover:text-cyan-400 p-1.5 transition text-xs" title="تحديث المحادثات">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+                <button onclick="toggleAdminChatWidget()" class="text-slate-400 hover:text-white p-1.5 transition text-base">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Body: Split view -->
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-3 overflow-hidden">
+            <!-- Sidebar: Dynamic Chat Threads -->
+            <div class="md:col-span-1 bg-slate-950/80 border-b md:border-b-0 md:border-l border-slate-800 flex flex-col overflow-hidden">
+                <div class="p-2.5 border-b border-slate-800">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-slate-500 text-xs"></i>
+                        <input type="text" id="chat-user-search" oninput="filterChatThreads()" placeholder="بحث باسم العميل..." class="w-full bg-slate-900 border border-slate-800 rounded-lg pr-8 pl-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+                
+                <div id="admin-chat-threads" class="flex-1 overflow-y-auto divide-y divide-slate-800/50">
+                    <div class="text-center py-10 text-slate-500 text-xs">
+                        <i class="fa-solid fa-spinner fa-spin text-lg mb-2 block"></i>
+                        جاري تحميل المحادثات...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Chat Conversation -->
+            <div class="md:col-span-2 bg-slate-950/40 flex flex-col overflow-hidden">
+                <!-- Chat Active Header -->
+                <div id="chat-active-header" class="p-3 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold text-xs" id="chat-active-avatar">
+                            ?
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-100" id="chat-active-username">اختر عميلاً لبدء المحادثة</h3>
+                            <p class="text-[10px] text-slate-400" id="chat-active-userinfo">لا توجد محادثة حددة</p>
+                        </div>
+                    </div>
+                    <span id="chat-active-status" class="hidden px-2 py-0.5 rounded-full text-[9px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                        مباشر
+                    </span>
+                </div>
+
+                <!-- Messages Area -->
+                <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-950/60">
+                    <div class="h-full flex flex-col items-center justify-center text-slate-500 text-xs gap-2">
+                        <i class="fa-solid fa-comments text-3xl text-slate-700"></i>
+                        <p>اختر عميلاً أو زائراً من القائمة لعرض المحادثة والرد عليه</p>
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <form id="admin-chat-form" onsubmit="handleSendAdminMessage(event)" class="p-2.5 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
+                    <input type="text" id="chat-message-input" disabled placeholder="اكتب ردك هنا..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button type="submit" id="chat-send-btn" disabled class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition shadow-lg shadow-cyan-500/20 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span>إرسال</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT PRODUCT MODAL -->
+    <div id="edit-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-md font-bold text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i> تعديل بيانات المنتج #<span id="edit-prod-id"></span>
+                </h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-100">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="edit-product-form" onsubmit="handleUpdateProduct(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300">اسم المنتج</label>
+                    <input type="text" id="edit-prod-name" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300">السعر (بالجنيه)</label>
+                    <input type="number" step="0.01" min="0" id="edit-prod-price" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <label class="flex items-center gap-2 text-xs text-slate-300"><input id="edit-prod-requires-variants" type="checkbox" onchange="toggleVariantPriceRequirement('edit-prod')" class="accent-cyan-400"> Requires options / يتطلب خيارات بسعر لكل خيار</label>
+                <label class="flex items-center gap-2 text-xs text-slate-300"><input id="edit-prod-is-active" type="checkbox" class="accent-cyan-400"> Active in store / نشط في المتجر</label>
+                <label class="flex items-center gap-2 text-xs text-slate-300"><input id="edit-prod-modified-games" type="checkbox" class="accent-cyan-400"> Show in Modified-Console Games Section / عرض في قسم ألعاب الأجهزة المعدّلة</label>
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300">المخزون</label>
+                    <input type="number" id="edit-prod-stock" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300">القسم</label>
+                    <select id="edit-prod-category" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500 text-slate-100">
+                        <option value="Consoles">أجهزة (Consoles)</option>
+                        <option value="Controllers">ذراعات تحكم (Controllers)</option>
+                        <option value="Accessories">إكسسوارات (Accessories)</option>
+                        <option value="Games">ألعاب (Games)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300">شارة البار الأزرق (اختياري)</label>
+                    <input type="text" id="edit-prod-badge" placeholder="مثال: PS5 أو PS4 / PS5" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300">تغيير الصورة (اختياري)</label>
+                    <input type="file" id="edit-prod-image-file" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 focus:outline-none focus:border-cyan-500 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-cyan-500/10 file:text-cyan-400 hover:file:bg-cyan-500/20 cursor-pointer">
+                </div>
+                <div class="col-span-full">
+                    <label class="block font-semibold mb-1 text-slate-300">الوصف</label>
+                    <input type="text" id="edit-prod-desc" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div class="col-span-full flex justify-end gap-2 pt-3 border-t border-slate-800">
+                    <button type="button" onclick="closeEditModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">إلغاء</button>
+                    <button type="submit" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition shadow-lg shadow-cyan-500/20">حفظ التغييرات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- HOMEPAGE BANNER EDITOR -->
+    <div id="homepage-banner-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-[80] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 max-w-2xl w-full shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 id="homepage-banner-modal-title" class="text-md font-bold text-cyan-400">Homepage banner / بانر الصفحة الرئيسية</h3>
+                <button type="button" onclick="closeHomepageBannerModal()" class="text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="homepage-banner-form" onsubmit="saveHomepageBanner(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div class="sm:col-span-2">
+                    <label class="block text-slate-300 mb-1">Image / الصورة</label>
+                    <input id="homepage-banner-image" type="file" accept="image/*" onchange="previewHomepageBannerImage(event)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-slate-300 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:font-bold file:bg-cyan-500/10 file:text-cyan-400">
+                    <img id="homepage-banner-preview" alt="Banner preview" class="hidden mt-3 max-h-48 w-full rounded-xl object-cover border border-slate-800">
+                </div>
+                <label class="block text-slate-300">Arabic title / العنوان بالعربية<input id="homepage-banner-title-ar" required maxlength="180" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100"></label>
+                <label class="block text-slate-300">English title / العنوان بالإنجليزية<input id="homepage-banner-title-en" required maxlength="180" dir="ltr" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100"></label>
+                <label class="block text-slate-300">Arabic subtitle / وصف بالعربية<input id="homepage-banner-subtitle-ar" maxlength="300" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100"></label>
+                <label class="block text-slate-300">English subtitle / وصف بالإنجليزية<input id="homepage-banner-subtitle-en" maxlength="300" dir="ltr" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100"></label>
+                <label class="block text-slate-300">Arabic button / الزر بالعربية<input id="homepage-banner-button-ar" maxlength="100" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100"></label>
+                <label class="block text-slate-300">English button / الزر بالإنجليزية<input id="homepage-banner-button-en" maxlength="100" dir="ltr" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100"></label>
+                <label class="block text-slate-300">Button destination / وجهة الزر
+                    <select id="homepage-banner-link" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100">
+                        <option value="">No destination / بدون وجهة</option>
+                        <option value="store-section">Store products / منتجات المتجر</option>
+                        <option value="offers-section">Offers / العروض</option>
+                        <option value="modified-games-section">Modified-console games / ألعاب الأجهزة المعدّلة</option>
+                    </select>
+                </label>
+                <label class="block text-slate-300">Position / الترتيب<select id="homepage-banner-position" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
+                <label class="sm:col-span-2 flex items-center gap-2 text-slate-300"><input id="homepage-banner-active" type="checkbox" checked class="accent-cyan-400"> Active / مفعّل</label>
+                <div class="sm:col-span-2 flex justify-end gap-2 border-t border-slate-800 pt-3">
+                    <button type="button" onclick="closeHomepageBannerModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl font-bold">Cancel / إلغاء</button>
+                    <button type="submit" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-5 py-2 rounded-xl font-bold">Save banner / حفظ البانر</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DETAILS MODAL FOR USER ACTIVITIES (REPAIRS, TRADES, INTERESTS) -->
+    <div id="details-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-2xl w-full shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 id="details-modal-title" class="text-md font-bold text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-folder-open"></i> تفاصيل السجل
+                </h3>
+                <button onclick="closeDetailsModal()" class="text-slate-400 hover:text-slate-100">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div id="details-modal-body" class="max-h-96 overflow-y-auto space-y-3 text-xs">
+                <!-- Dynamic Items Inserted via JS -->
+            </div>
+
+            <div class="flex justify-end pt-3 border-t border-slate-800">
+                <button type="button" onclick="closeDetailsModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT VARIANTS MODAL -->
+    <div id="variants-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-[70] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-2xl w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-md font-bold text-cyan-400">Product options / خيارات المنتج: <span id="variant-product-name"></span></h3>
+                <button onclick="closeProductVariants()" class="text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <label class="flex items-center gap-2 text-xs text-slate-300"><input id="variant-required-toggle" type="checkbox" class="accent-cyan-400"> Requires platform/edition options / يتطلب اختيار منصة أو إصدار</label>
+            <button onclick="saveVariantSettings()" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 px-3 py-2 rounded-lg text-xs">Save setting / حفظ الإعداد</button>
+            <div id="variant-manager-list" class="space-y-2"></div>
+            <form id="variant-add-form" onsubmit="addProductVariant(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2 border-t border-slate-800 pt-4">
+                <input id="new-variant-platform" maxlength="80" placeholder="Platform / المنصة" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs">
+                <input id="new-variant-edition" maxlength="80" placeholder="Edition / الإصدار" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs">
+                <input id="new-variant-price" type="number" min="0" step="0.01" placeholder="Price / السعر" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs">
+                <button class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-lg p-2 text-xs font-bold">Add option / إضافة خيار</button>
+            </form>
+            <p class="text-[11px] text-slate-500">Leave price empty to save an unavailable option; customers cannot order it until priced. / اترك السعر فارغاً لحفظ خيار غير متاح للشراء حتى تحديد سعره.</p>
+        </div>
+    </div>
+
+    <!-- JavaScript Admin API Integration -->
+    <script src="js/config.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/admin.js"></script>
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 left-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+</body>
+</html>

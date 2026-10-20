@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <script>
+        (() => { const allowed = ['midnight-navy', 'cream-coral', 'warm-minimal']; try { const saved = localStorage.getItem('mdstore-theme'); document.documentElement.dataset.theme = allowed.includes(saved) ? saved : 'midnight-navy'; } catch (_) { document.documentElement.dataset.theme = 'midnight-navy'; } })();
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MD Store | متجر وصيانة البلايستيشن والألعاب</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950 overflow-x-hidden">
+<!-- Creative Gaming Refresh / Loading Overlay -->
+    <div id="page-loader" class="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center transition-opacity duration-500 opacity-100 pointer-events-auto">
+        <div class="relative flex items-center justify-center">
+            <!-- Pulsing Outer Glow Ring -->
+            <div class="w-28 h-28 rounded-full border-2 border-cyan-500/20 border-t-cyan-400 border-b-cyan-400 animate-spin shadow-[0_0_30px_rgba(34,211,238,0.3)]"></div>
+            
+            <!-- Secondary Reverse Ring -->
+            <div class="absolute w-20 h-20 rounded-full border-2 border-indigo-500/20 border-r-indigo-400 border-l-indigo-400 animate-[spin_1.5s_linear_infinite_reverse]"></div>
+
+            <!-- Glowing Gamepad Icon inside Loader -->
+            <div class="absolute flex items-center justify-center animate-pulse">
+                <i class="fa-solid fa-gamepad text-3xl text-cyan-400 drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]"></i>
+            </div>
+        </div>
+
+        <!-- Animated Text & Progress Bar -->
+        <div class="mt-6 flex flex-col items-center gap-2">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 animate-pulse">
+                    MD GAMES STORE
+                </span>
+            </div>
+            <div class="w-36 h-1 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                <div class="h-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-cyan-400 w-full animate-[shimmer_1.5s_infinite]"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Header Navigation -->
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 shadow-xl" dir="rtl">
+        <div class="w-full px-6 sm:px-10 h-20 flex items-center justify-between gap-4">
+            
+            <!-- 1. Logo & Brand Name (أقصى اليمين) -->
+            <button onclick="handleLogoClick()" class="flex items-center gap-3 focus:outline-none group shrink-0">
+                <div class="p-1.5 bg-slate-950 rounded-xl border border-cyan-500/30 group-hover:border-cyan-400 transition shadow-inner">
+                    <img src="logo.jpeg" alt="MD Games Store Logo" class="h-11 w-auto object-contain rounded-lg" onerror="this.src='https://via.placeholder.com/40'">
+                </div>
+                <div class="text-right">
+                    <h1 class="text-xl font-black text-cyan-400 tracking-wide group-hover:text-cyan-300 transition">
+                        MD Games Store
+                    </h1>
+                    <p class="text-[11px] text-slate-400" data-key="tagline">بيع، شراء، صيانة، وألعاب البلايستيشن</p>
+                </div>
+            </button>
+
+            <!-- 2. Navigation Tabs + Cart + Language (المنتصف) -->
+            <div class="hidden lg:flex items-center gap-3">
+                <!-- التبويبات -->
+                <nav class="flex items-center gap-1.5 bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800 shadow-inner">
+                    <button data-tab="landing" onclick="switchTab('landing')" id="tab-btn-landing" class="tab-btn tab-active px-3 py-2 rounded-xl text-xs font-extrabold transition duration-200 flex items-center gap-1.5 text-cyan-400">
+                        <i class="fa-solid fa-house"></i> <span data-key="nav_home">الرئيسية</span>
+                    </button>
+                    <button data-tab="store" onclick="switchTab('store')" id="tab-btn-store" class="tab-btn px-3 py-2 rounded-xl text-xs font-extrabold transition duration-200 flex items-center gap-1.5 text-slate-400 hover:text-cyan-400">
+                        <i class="fa-solid fa-store"></i> <span data-key="nav_store">المتجر</span>
+                    </button>
+                    <button data-tab="games" onclick="switchTab('games')" id="tab-btn-games" class="tab-btn px-3 py-2 rounded-xl text-xs font-extrabold transition duration-200 flex items-center gap-1.5 text-slate-400 hover:text-cyan-400">
+                        <i class="fa-solid fa-gamepad"></i> <span data-key="nav_games">مكتبة الألعاب</span>
+                    </button>
+                    <button data-tab="maintenance" onclick="switchTab('maintenance')" id="tab-btn-maintenance" class="tab-btn px-3 py-2 rounded-xl text-xs font-extrabold transition duration-200 flex items-center gap-1.5 text-slate-400 hover:text-cyan-400">
+                        <i class="fa-solid fa-wrench"></i> <span data-key="nav_maintenance">الصيانة</span>
+                    </button>
+                    <button data-tab="trade" onclick="switchTab('trade')" id="tab-btn-trade" class="tab-btn px-3 py-2 rounded-xl text-xs font-extrabold transition duration-200 flex items-center gap-1.5 text-slate-400 hover:text-cyan-400">
+                        <i class="fa-solid fa-arrows-rotate"></i> <span data-key="nav_trade">الاستبدال والبيع</span>
+                    </button>
+                </nav>
+
+                <!-- سلة التسوق واللغة بجانب التبويبات في المنتصف -->
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleLanguage()" class="bg-slate-950 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md">
+                        <i class="fa-solid fa-globe text-xs"></i>
+                        <span id="lang-label">EN</span>
+                    </button>
+
+                    <button onclick="openCart()" class="relative bg-slate-950 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-lg">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span data-key="cart_title">Cart</span>
+                        <span id="cart-count" class="hidden absolute -top-2 -right-2 min-w-5 h-5 px-1 bg-cyan-400 text-slate-950 rounded-full text-[10px] flex items-center justify-center">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Auth / Profile & Logout Buttons (تحريك للداخل ناحية اليمين بمسافة أكبر عبر ml-12 sm:ml-16) -->
+            <div class="flex items-center gap-2 shrink-0 ml-0 md:ml-12">
+                <div id="auth-header-container" class="hidden md:flex items-center gap-2">
+                    <button onclick="handleAuthClick()" id="user-btn-main" class="bg-gradient-to-r from-slate-800 to-slate-900 hover:from-cyan-950 hover:to-slate-900 text-cyan-400 border border-cyan-500/30 px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-lg max-w-[160px] truncate">
+                        <i class="fa-solid fa-user-gear text-sm shrink-0"></i>
+                        <span id="user-btn-label" data-key="account_btn" class="truncate">تسجيل الدخول / حسابي</span>
+                    </button>
+                    <button id="logout-btn" onclick="logoutUser()" class="hidden bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/30 px-2.5 py-2.5 rounded-xl text-xs font-bold transition shadow-lg shrink-0" title="تسجيل الخروج">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+
+            <div class="theme-picker shrink-0" data-theme-picker>
+                <button type="button" class="theme-picker-trigger" data-theme-toggle aria-label="تغيير ألوان الموقع" title="تغيير ألوان الموقع">
+                    <i class="fa-solid fa-palette" aria-hidden="true"></i><span class="hidden md:inline text-[11px] font-bold">المظهر</span>
+                </button>
+            </div>
+            <!-- Hamburger Button (Mobile) -->
+            <button id="hamburger-btn" onclick="toggleMobileMenu()" class="md:hidden text-cyan-400 p-2.5 rounded-xl bg-slate-950 border border-cyan-500/30 hover:border-cyan-400 transition focus:outline-none">
+                <i id="menu-icon-open" class="fa-solid fa-bars text-lg"></i>
+                <i id="menu-icon-close" class="fa-solid fa-xmark text-lg hidden"></i>
+            </button>
+            </div>
+
+        </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-950/95 border-b border-slate-800 px-4 py-5 space-y-4 shadow-2xl transition-all">
+            <div id="mobile-user-card" class="glass-card p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between"></div>
+
+            <div class="grid grid-cols-1 gap-1.5 text-xs font-extrabold">
+                <button data-tab="landing" onclick="mobileNavigate('landing')" id="mobile-btn-landing" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900/60 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-200 border border-slate-800/80 transition">
+                    <i class="fa-solid fa-house text-cyan-400 text-sm"></i>
+                    <span data-key="nav_home">الرئيسية</span>
+                </button>
+                <button data-tab="store" onclick="mobileNavigate('store')" id="mobile-btn-store" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900/60 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-200 border border-slate-800/80 transition">
+                    <i class="fa-solid fa-store text-cyan-400 text-sm"></i>
+                    <span data-key="nav_store">المتجر</span>
+                </button>
+                <button data-tab="games" onclick="mobileNavigate('games')" id="mobile-btn-games" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900/60 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-200 border border-slate-800/80 transition">
+                    <i class="fa-solid fa-gamepad text-cyan-400 text-sm"></i>
+                    <span data-key="nav_games">مكتبة الألعاب</span>
+                </button>
+                <button data-tab="maintenance" onclick="mobileNavigate('maintenance')" id="mobile-btn-maintenance" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900/60 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-200 border border-slate-800/80 transition">
+                    <i class="fa-solid fa-wrench text-cyan-400 text-sm"></i>
+                    <span data-key="nav_maintenance">الصيانة</span>
+                </button>
+                <button data-tab="trade" onclick="mobileNavigate('trade')" id="mobile-btn-trade" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900/60 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-200 border border-slate-800/80 transition">
+                    <i class="fa-solid fa-arrows-rotate text-cyan-400 text-sm"></i>
+                    <span data-key="nav_trade">الاستبدال والبيع</span>
+                </button>
+            </div>
+
+            <button onclick="openCart(); toggleMobileMenu();" class="w-full flex items-center justify-between bg-slate-900 border border-cyan-500/30 text-cyan-400 px-4 py-3 rounded-xl text-xs font-bold">
+                <span class="flex items-center gap-2"><i class="fa-solid fa-cart-shopping"></i><span data-key="cart_title">Cart</span></span>
+                <span id="mobile-cart-count" class="text-slate-100">0</span>
+            </button>
+
+            <hr class="border-slate-800 my-2">
+
+            <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400 font-bold">اللغة / Language:</span>
+                <button onclick="toggleLanguage()" class="bg-slate-900 text-cyan-400 border border-cyan-500/30 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-globe text-xs"></i>
+                    <span id="mobile-lang-label">EN</span>
+                </button>
+            </div>
+
+            <div class="glass-card p-3.5 rounded-2xl border border-slate-800/80 text-xs space-y-2">
+                <p class="font-bold text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-headset"></i> <span>تواصل معنا - MD Games Store</span>
+                </p>
+                <div class="space-y-1.5 text-slate-300">
+                    <a href="https://wa.me/201210829120" target="_blank" class="flex items-center gap-2 hover:text-emerald-400 transition">
+                        <i class="fa-brands fa-whatsapp text-emerald-400 text-sm"></i>
+                        <span dir="ltr">01210829120</span>
+                    </a>
+                    <p class="flex items-center gap-2 text-slate-400">
+                        <i class="fa-solid fa-location-dot text-rose-400"></i>
+                        <span>الإسكندرية - فرع المبيعات والصيانة</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Containers -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-12">
+
+        <!-- 1. LANDING PAGE -->
+        <div id="tab-content-landing" class="space-y-16 py-4">
+            <div id="hero-slider" class="relative min-h-[580px] rounded-3xl" aria-roledescription="carousel">
+                <div id="hero-slides" class="relative min-h-[580px]">
+            <!-- Hero Banner -->
+            <div id="hero-slide-primary" class="hero-slide hero-slide-active relative w-full rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-2xl p-6 sm:p-12 text-center flex flex-col items-center justify-between min-h-[580px]" aria-hidden="false">
+                <div class="absolute inset-0 bg-gradient-to-b from-blue-900/20 via-slate-950/60 to-slate-950 pointer-events-none"></div>
+                
+                <div class="anim-text-top z-10 mb-2 sm:mb-3">
+                    <p class="text-xs sm:text-sm uppercase tracking-[0.35em] font-extrabold text-cyan-400/90 font-sans-title" data-key="hero_sub">
+                        THE NEXT GENERATION OF PLAY
+                    </p>
+                </div>
+
+                <div class="anim-title-main z-10 mb-6 pt-2">
+                    <h1 class="text-4xl sm:text-7xl md:text-8xl font-black text-slate-100 tracking-tight font-sans-title drop-shadow-2xl" data-key="hero_main_title">
+                        اللعب بيبدأ من هنا
+                    </h1>
+                </div>
+
+                <div class="anim-controller z-20 relative px-4">
+                    <img src="Dualsense PS5 Controller.png" alt="DualSense PS5 Controller" class="w-72 sm:w-[420px] md:w-[480px] drop-shadow-[0_25px_35px_rgba(34,211,238,0.3)] object-contain pointer-events-none" onerror="this.src='https://m.media-amazon.com/images/I/612bjwBuobL._AC_SL1500_.jpg'">
+                </div>
+
+                <div class="z-30 flex flex-wrap justify-center gap-4 mt-6">
+                    <button onclick="navigateToLandingSection('store-section')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black px-8 py-3.5 rounded-2xl text-xs sm:text-sm shadow-xl transition transform hover:-translate-y-1 flex items-center gap-2">
+                        <i class="fa-solid fa-bag-shopping text-base"></i>
+                        <span data-key="btn_shop">تسوق أجهزة واكسسوارات PS5</span>
+                    </button>
+                    <button data-tab="maintenance" onclick="switchTab('maintenance')" class="bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold px-8 py-3.5 rounded-2xl text-xs sm:text-sm shadow-xl transition transform hover:-translate-y-1 flex items-center gap-2">
+                        <i class="fa-solid fa-wrench text-cyan-400 text-base"></i>
+                        <span data-key="btn_maint">احجز صيانة لجهازك</span>
+                    </button>
+                    <button onclick="openRatingModal()" class="bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-slate-950 border border-amber-500/30 font-bold px-6 py-3.5 rounded-2xl text-xs sm:text-sm shadow-xl transition transform hover:-translate-y-1 flex items-center gap-2">
+                        <i class="fa-solid fa-star text-base"></i>
+                        <span>قيم تجربتك معنا</span>
+                    </button>
+                </div>
+            </div>
+
+                    <div id="hero-dynamic-slides" aria-live="polite"></div>
+                </div>
+                <button id="hero-prev" type="button" onclick="moveHeroSlide(-1)" class="hero-control absolute top-1/2 right-3 sm:right-5 -translate-y-1/2 z-40 bg-slate-950/70 hover:bg-cyan-500 text-cyan-300 hover:text-slate-950 border border-cyan-500/40 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition" aria-label="Previous banner / البانر السابق">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <button id="hero-next" type="button" onclick="moveHeroSlide(1)" class="hero-control absolute top-1/2 left-3 sm:left-5 -translate-y-1/2 z-40 bg-slate-950/70 hover:bg-cyan-500 text-cyan-300 hover:text-slate-950 border border-cyan-500/40 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition" aria-label="Next banner / البانر التالي">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <div id="hero-indicators" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2" role="group" aria-label="Banner slides / شرائح البانر"></div>
+            </div>
+
+            <!-- Dynamic offer products -->
+            <section id="offers-section" class="hidden space-y-5 landing-scroll-target" aria-labelledby="offers-title">
+                <div class="flex items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                    <div>
+                        <h2 id="offers-title" class="text-2xl font-black text-slate-100 flex items-center gap-2"><i class="fa-solid fa-tags text-rose-400"></i><span data-key="offers_title">عروض مميزة</span></h2>
+                        <p class="text-xs text-slate-400 mt-1" data-key="offers_subtitle">منتجات تحمل شارة Save أو Offer</p>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <div class="landing-carousel-controls flex gap-2" data-carousel-controls="offers-products-grid">
+                            <button type="button" data-carousel-control="previous" onclick="scrollLandingCarousel('offers-products-grid','previous')" class="bg-slate-900 border border-slate-700 hover:border-cyan-400 text-cyan-300 w-9 h-9 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed" aria-label="Previous offers / العروض السابقة"><i class="fa-solid fa-chevron-right"></i></button>
+                            <button type="button" data-carousel-control="next" onclick="scrollLandingCarousel('offers-products-grid','next')" class="bg-slate-900 border border-slate-700 hover:border-cyan-400 text-cyan-300 w-9 h-9 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed" aria-label="Next offers / العروض التالية"><i class="fa-solid fa-chevron-left"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div id="offers-products-grid" class="flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3" aria-label="Offer products / منتجات العروض"></div>
+            </section>
+
+            <!-- Manually selected modified-console games -->
+            <section id="modified-games-section" class="hidden space-y-5 landing-scroll-target" aria-labelledby="modified-games-title">
+                <div class="flex items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                    <div>
+                        <h2 id="modified-games-title" class="text-2xl font-black text-slate-100 flex items-center gap-2"><i class="fa-solid fa-gamepad text-cyan-400"></i><span data-key="modified_games_title">ألعاب الأجهزة المعدّلة</span></h2>
+                        <p class="text-xs text-slate-400 mt-1" data-key="modified_games_subtitle">اختيارات يحددها المتجر</p>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <div class="landing-carousel-controls flex gap-2" data-carousel-controls="modified-games-grid">
+                            <button type="button" data-carousel-control="previous" onclick="scrollLandingCarousel('modified-games-grid','previous')" class="bg-slate-900 border border-slate-700 hover:border-cyan-400 text-cyan-300 w-9 h-9 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed" aria-label="Previous modified games / الألعاب المعدّلة السابقة"><i class="fa-solid fa-chevron-right"></i></button>
+                            <button type="button" data-carousel-control="next" onclick="scrollLandingCarousel('modified-games-grid','next')" class="bg-slate-900 border border-slate-700 hover:border-cyan-400 text-cyan-300 w-9 h-9 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed" aria-label="Next modified games / الألعاب المعدّلة التالية"><i class="fa-solid fa-chevron-left"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div id="modified-games-grid" class="flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3" aria-label="Modified-console games / ألعاب الأجهزة المعدّلة"></div>
+            </section>
+
+            <!-- Store Features Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="glass-card p-6 rounded-2xl flex items-center gap-4">
+                    <div class="p-4 bg-cyan-500/10 text-cyan-400 rounded-xl text-2xl"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div>
+                        <h4 class="font-extrabold text-slate-100 text-sm" data-key="feat_warranty_title">ضمان معتمد</h4>
+                        <p class="text-xs text-slate-400 mt-0.5" data-key="feat_warranty_desc">ضمان على جميع الأجهزة والصيانة</p>
+                    </div>
+                </div>
+                <div class="glass-card p-6 rounded-2xl flex items-center gap-4">
+                    <div class="p-4 bg-cyan-500/10 text-cyan-400 rounded-xl text-2xl"><i class="fa-solid fa-truck-fast"></i></div>
+                    <div>
+                        <h4 class="font-extrabold text-slate-100 text-sm" data-key="feat_delivery_title">توصيل سريع</h4>
+                        <p class="text-xs text-slate-400 mt-0.5" data-key="feat_delivery_desc">شحن لجميع المناطق بالإسكندرية</p>
+                    </div>
+                </div>
+                <div class="glass-card p-6 rounded-2xl flex items-center gap-4">
+                    <div class="p-4 bg-cyan-500/10 text-cyan-400 rounded-xl text-2xl"><i class="fa-solid fa-arrows-rotate"></i></div>
+                    <div>
+                        <h4 class="font-extrabold text-slate-100 text-sm" data-key="feat_trade_title">استبدال فورى</h4>
+                        <p class="text-xs text-slate-400 mt-0.5" data-key="feat_trade_desc">بدل ذراعك أو جهازك القديم بأحدث فئة</p>
+                    </div>
+                </div>
+                <div class="glass-card p-6 rounded-2xl flex items-center gap-4">
+                    <div class="p-4 bg-cyan-500/10 text-cyan-400 rounded-xl text-2xl"><i class="fa-solid fa-headset"></i></div>
+                    <div>
+                        <h4 class="font-extrabold text-slate-100 text-sm" data-key="feat_support_title">دعم متواصل</h4>
+                        <p class="text-xs text-slate-400 mt-0.5" data-key="feat_support_desc">فريق فني جاهز للاستفسارات</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. STORE PAGE -->
+        <div id="tab-content-store" class="hidden space-y-8">
+            <section id="store-section" class="landing-scroll-target" aria-labelledby="store-title">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 id="store-title" class="text-2xl font-black text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-store text-cyan-400"></i> <span data-key="store_title">متجر الأجهزة والاكسسوارات</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1" data-key="store_subtitle">أجهزة بلايستيشن الأصلية، ذراعات التحكم، واكسسوارات الألعاب المعززة</p>
+                </div>
+                <!-- شريط البحث في المتجر -->
+                <div class="relative w-full md:w-80">
+                    <input type="text" id="store-search-input" oninput="filterStoreProducts()" placeholder="ابحث عن جهاز أو إكسسوار..." class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 pr-10 pl-4 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 transition">
+                    <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-3 text-slate-500 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            </div>
+            </section>
+        </div>
+
+        <!-- 3. GAMES LIBRARY PAGE -->
+        <div id="tab-content-games" class="hidden space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-gamepad text-cyan-400"></i> <span data-key="games_title">مكتبة الألعاب والاشتراكات</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1" data-key="games_subtitle">أحدث ألعاب PS5 & PS4 بالأقراص الأصلية أو الحسابات الرقمية</p>
+                </div>
+                <!-- شريط البحث في الألعاب -->
+                <div class="relative w-full md:w-80">
+                    <input type="text" id="games-search-input" oninput="filterGameProducts()" placeholder="ابحث باسم اللعبة (مثال: GTA, FIFA)..." class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 pr-10 pl-4 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 transition">
+                    <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-3 text-slate-500 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Games Grid -->
+            <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            </div>
+        </div>
+
+        <!-- 4. FULL PRODUCT PAGE SECTION -->
+        <div id="tab-content-product" class="hidden space-y-8">
+            
+            <!-- Breadcrumb Trail -->
+            <nav class="flex items-center gap-2 text-xs text-slate-400 border-b border-slate-800 pb-3">
+                <button data-tab="landing" onclick="switchTab('landing')" class="hover:text-cyan-400 transition">الرئيسية</button>
+                <i class="fa-solid fa-chevron-left text-[10px] text-slate-600"></i>
+                <button id="breadcrumb-parent" data-tab="store" onclick="switchTab('store')" class="hover:text-cyan-400 transition">المتجر</button>
+                <i class="fa-solid fa-chevron-left text-[10px] text-slate-600"></i>
+                <span id="breadcrumb-product-title" class="text-cyan-400 font-bold truncate">اسم المنتج</span>
+            </nav>
+
+            <!-- Product Details Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Left Column: Gallery & Thumbnails -->
+                <div class="lg:col-span-7 flex flex-col md:flex-row gap-4">
+                    <div id="product-thumbnails" class="flex md:flex-col gap-3 order-2 md:order-1 overflow-x-auto md:overflow-y-auto max-h-96">
+                    </div>
+                    
+                    <div class="flex-1 bg-slate-900/60 border border-slate-800 rounded-2xl p-6 flex items-center justify-center order-1 md:order-2 min-h-[350px]">
+                        <img id="main-product-image" src="" alt="Product Main Image" class="max-h-96 object-contain rounded-lg transition-all duration-300" onerror="this.src='https://via.placeholder.com/400x400?text=MD+Store'">
+                    </div>
+                </div>
+
+                <!-- Right Column: Info & Add to Cart -->
+                <div class="lg:col-span-5 flex flex-col justify-between glass-card p-6 rounded-2xl border border-cyan-500/20 shadow-2xl space-y-6">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span id="product-page-category" class="bg-cyan-500/10 text-cyan-400 text-[11px] font-bold px-3 py-1 rounded-full border border-cyan-500/30 uppercase">
+                                MD STORE
+                            </span>
+                        </div>
+
+                        <h1 id="product-page-title" class="text-2xl sm:text-3xl font-black text-slate-100 leading-snug mb-4">
+                            اسم المنتج
+                        </h1>
+
+                        <div class="flex items-baseline gap-4 mb-6 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                            <span id="product-page-price" class="text-3xl font-black text-cyan-400">0 EGP</span>
+                            <span id="product-page-old-price" class="text-sm text-slate-500 line-through hidden">0 EGP</span>
+                        </div>
+
+                        <!-- المكان المخصص لأزرار المنصات والنسخ -->
+                        <div id="product-page-variants" class="mb-6 space-y-2"></div>
+
+                        <div class="mb-6 space-y-2">
+                            <label class="block text-xs text-slate-400 font-bold">الكمية المطلوب طلبها:</label>
+                            <div class="flex items-center bg-slate-950 rounded-xl border border-slate-800 w-36 overflow-hidden">
+                                <button onclick="changeQty(-1)" class="w-10 h-10 flex items-center justify-center bg-slate-900 hover:bg-cyan-500 hover:text-slate-950 text-slate-200 transition font-black text-base">-</button>
+                                <input type="number" id="product-page-qty" value="1" min="1" readonly class="w-16 bg-transparent text-center font-bold text-slate-100 text-sm focus:outline-none">
+                                <button onclick="changeQty(1)" class="w-10 h-10 flex items-center justify-center bg-slate-900 hover:bg-cyan-500 hover:text-slate-950 text-slate-200 transition font-black text-base">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-4 border-t border-slate-800/80">
+                        <!-- زر إضافة إلى السلة (Add to Cart) -->
+                        <button id="add-to-cart-btn" onclick="handleAddToCart()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black py-3.5 px-6 rounded-xl flex items-center justify-center gap-3 transition shadow-lg shadow-cyan-950/40 text-sm cursor-pointer">
+                            <i class="fa-solid fa-cart-plus text-lg"></i>
+                            <span>إضافة إلى السلة</span>
+                        </button>
+                        
+                        <!-- زر العودة للمتجر -->
+                        <button id="product-page-modified-contact" type="button" onclick="contactModifiedGame()" class="hidden w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-6 rounded-xl items-center justify-center gap-3 transition shadow-lg text-sm">
+                            <i class="fa-brands fa-whatsapp text-lg"></i>
+                            <span id="product-page-modified-contact-label" data-key="modified_game_contact_button">Coordinate branch installation / نسّق تركيب اللعبة بالفرع</span>
+                        </button>
+                        <button data-tab="store" onclick="switchTab('store')" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 border border-slate-800 text-xs cursor-pointer">
+                            <i class="fa-solid fa-arrow-right"></i>
+                            <span>العودة للمتجر</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description Box -->
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-4">
+                <h3 class="text-base font-black text-cyan-400 border-b border-slate-800 pb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-align-right"></i>
+                    <span>الوصف والمواصفات التفصيلية (Description)</span>
+                </h3>
+                <div id="product-page-description" class="text-slate-300 text-sm leading-relaxed whitespace-pre-line bg-slate-950/50 p-4 rounded-xl border border-slate-800/80">
+                </div>
+            </div>
+
+            <section class="border-t border-slate-800 pt-6 sm:pt-8 space-y-5" aria-labelledby="product-ratings-heading">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h3 id="product-ratings-heading" class="text-lg font-black text-cyan-400">تقييمات المنتج</h3>
+                        <p class="mt-1 text-xs text-slate-500">آراء العملاء لهذا المنتج</p>
+                    </div>
+                    <button type="button" onclick="openRatingModal(window.currentSelectedProduct?.id)" class="inline-flex items-center gap-2 rounded-lg border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-xs font-bold text-amber-300 transition hover:bg-amber-400 hover:text-slate-950"><i class="fa-solid fa-pen" aria-hidden="true"></i> أضف تقييمك</button>
+                </div>
+                <div class="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:gap-8">
+                    <div class="space-y-4">
+                        <div id="product-ratings-summary" class="min-h-16" aria-live="polite"></div>
+                        <div id="product-rating-distribution" class="space-y-2" aria-label="توزيع التقييمات حسب النجوم"></div>
+                    </div>
+                    <div id="product-ratings-list" class="min-w-0 space-y-3 text-sm" aria-live="polite">افتح تفاصيل المنتج لعرض التقييمات.</div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- 5. MAINTENANCE PAGE -->
+        <div id="tab-content-maintenance" class="hidden space-y-8">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-wrench text-cyan-400"></i> <span data-key="maint_main_title">مركز صيانة البلايستيشن والذراعات</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1" data-key="maint_sub_title">صيانة فورية بأحدث المعدات وقطع غيار أصلية 100%</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Services List -->
+                <div class="lg:col-span-1 space-y-4">
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <h3 class="font-black text-cyan-400 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check"></i> <span data-key="maint_services_heading">خدماتنا الشائعة</span>
+                        </h3>
+                        <ul class="space-y-2.5 text-xs text-slate-300">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-chevron-left text-cyan-400 text-[10px]"></i> <span data-key="maint_s1">تنظيف جهاز PS5 وتغيير السائل الحراري (Liquid Metal)</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-chevron-left text-cyan-400 text-[10px]"></i> <span data-key="maint_s2">إصلاح مشكلة انحراف الانالوج (Stick Drift)</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-chevron-left text-cyan-400 text-[10px]"></i> <span data-key="maint_s3">تغيير مدخل HDMI المكسور للجهاز</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-chevron-left text-cyan-400 text-[10px]"></i> <span data-key="maint_s4">إصلاح أزرار الذراع وتغيير البطاريات الأصلية</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Booking Form -->
+                <div class="lg:col-span-2 glass-card p-6 rounded-2xl space-y-4">
+                    <h3 class="font-black text-slate-100 text-lg" data-key="maint_form_heading">طلب حجز صيانة جهاز/ذراع</h3>
+                    <form id="maint-form" onsubmit="handleMaintSubmit(event)" class="space-y-4 text-xs" novalidate>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-semibold mb-1 text-slate-300" data-key="maint_device_lbl">نوع الجهاز / الذراع</label>
+                                <select id="maint-device" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-cyan-500 text-slate-100">
+                                    <option value="" disabled selected data-key="maint_device_select">اختر نوع الجهاز</option>
+                                    <option value="ps5">بلايستيشن 5 (PS5)</option>
+                                    <option value="ps4">بلايستيشن 4 (PS4)</option>
+                                    <option value="dualsense">ذراع DualSense PS5</option>
+                                    <option value="dualshock">ذراع DualShock PS4</option>
+                                </select>
+                                <p id="error-maint-device" class="hidden text-rose-500 text-[11px] font-bold mt-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1 text-slate-300" data-key="maint_phone_lbl">رقم الهاتف للتواصل</label>
+                                <input type="tel" id="maint-phone" placeholder="010xxxxxxxx" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-cyan-500 text-slate-100">
+                                <p id="error-maint-phone" class="hidden text-rose-500 text-[11px] font-bold mt-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold mb-1 text-slate-300" data-key="maint_desc_lbl">وصف المشكلة بالتفصيل</label>
+                            <textarea id="maint-desc" rows="3" data-ph-key="maint_desc_ph" placeholder="مثال: الجهاز بيسخن وبيفصل بعد نص ساعة، أو الانالوج الشمال بيتحرك لوحده" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-cyan-500 text-slate-100"></textarea>
+                            <p id="error-maint-desc" class="hidden text-rose-500 text-[11px] font-bold mt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                            </p>
+                        </div>
+
+                        <button type="submit" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black px-6 py-3 rounded-xl transition shadow-lg w-full sm:w-auto" data-key="maint_submit_btn">
+                            إرسال طلب الصيانة
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. TRADE & SELL PAGE -->
+        <div id="tab-content-trade" class="hidden space-y-8">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-rotate text-cyan-400"></i> <span data-key="trade_main_title">بيع أو استبدال جهازك القديم</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1" data-key="trade_sub_title">قيم جهازك/ذراعك المستعمل وخذ الفرق فوراً</p>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 sm:p-8 rounded-2xl max-w-2xl mx-auto space-y-4">
+                <h3 class="font-black text-slate-100 text-base" data-key="trade_form_heading">نموذج تقييم الاستبدال أو البيع</h3>
+                <form id="trade-form" onsubmit="handleTradeSubmit(event)" class="space-y-4 text-xs" novalidate>
+                    <div>
+                        <label class="block font-semibold mb-1 text-slate-300" data-key="trade_item_lbl">ما الذي ترغب في بيعه أو استبداله؟</label>
+                        <input type="text" id="trade-item" data-ph-key="trade_item_ph" placeholder="مثال: PS4 Pro 1TB مع ذراعين" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-cyan-500 text-slate-100">
+                        <p id="error-trade-item" class="hidden text-rose-500 text-[11px] font-bold mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                        </p>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold mb-1 text-slate-300" data-key="trade_cond_lbl">حالة الجهاز والمشتملات</label>
+                        <textarea id="trade-condition" rows="3" data-ph-key="trade_cond_ph" placeholder="اذكر إن كان مع العلبة، الأوراق، أو به أي خدوش بسيطة" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-cyan-500 text-slate-100"></textarea>
+                        <p id="error-trade-condition" class="hidden text-rose-500 text-[11px] font-bold mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                        </p>
+                    </div>
+
+                    <button type="submit" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black px-6 py-3 rounded-xl transition shadow-lg w-full" data-key="trade_submit_btn">
+                        طلب التقييم المبدئي
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 7. USER PROFILE PAGE -->
+        <div id="tab-content-profile" class="hidden space-y-8">
+            <div class="glass-card rounded-3xl p-6 sm:p-10 border border-slate-800 shadow-2xl space-y-6">
+                <div class="flex items-center gap-4 border-b border-slate-800 pb-6">
+                    <div class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl font-black">
+                        <i class="fa-solid fa-user-astronaut"></i>
+                    </div>
+                    <div>
+                        <h2 id="profile-name-display" class="text-2xl font-black text-slate-100">اسم المستخدم</h2>
+                        <p id="profile-email-display" class="text-xs text-cyan-400 mt-0.5">الإيميل</p>
+                        <p id="profile-phone-display" class="text-xs text-slate-400 mt-0.5">الهاتف</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-950/60 p-5 rounded-2xl border border-slate-800 space-y-2">
+                        <h4 class="font-extrabold text-slate-200 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-cyan-400"></i> <span data-key="prof_recent_orders">طلبياتك الأخيرة</span>
+                        </h4>
+                        <p class="text-xs text-slate-400" data-key="prof_no_orders">لا توجد طلبات شراء حالية</p>
+                    </div>
+                    <div class="bg-slate-950/60 p-5 rounded-2xl border border-slate-800 space-y-2">
+                        <h4 class="font-extrabold text-slate-200 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-screws-mccourt text-cyan-400"></i> <span data-key="prof_maint_devices">أجهزة في الصيانة</span>
+                        </h4>
+                        <p class="text-xs text-slate-400" data-key="prof_no_maint">لا توجد أجهزة قيد الصيانة الآن</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Shopping Cart and Checkout -->
+    <div id="cart-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl space-y-5 max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h3 id="cart-modal-title" class="text-base font-black text-cyan-400 flex items-center gap-2"></h3>
+                <button onclick="closeCart()" class="text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="cart-items" class="space-y-3 overflow-y-auto flex-1 min-h-0"></div>
+            <div class="border-t border-slate-800 pt-4 space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <input id="checkout-recipient-name" type="text" maxlength="180" autocomplete="name" required oninput="renderCart()" data-ph-key="checkout_recipient" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100" placeholder="اسم المستلم">
+                    <input id="checkout-phone" type="tel" maxlength="40" autocomplete="tel" required oninput="renderCart()" data-ph-key="checkout_phone" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100" placeholder="رقم الهاتف">
+                    <textarea id="checkout-address" rows="2" maxlength="500" autocomplete="street-address" required oninput="renderCart()" data-ph-key="checkout_address" class="sm:col-span-2 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 resize-y" placeholder="العنوان بالتفصيل"></textarea>
+                    <label class="sm:col-span-2 block text-xs font-bold text-slate-300"><span data-key="checkout_delivery_method">طريقة الاستلام</span>
+                        <select id="checkout-delivery-method" required onchange="updateCheckoutFulfillment()" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100">
+                            <option value="home_delivery" data-key="checkout_home_delivery">توصيل للعنوان</option>
+                            <option value="store_pickup" data-key="checkout_store_pickup">استلام من الفرع</option>
+                        </select>
+                    </label>
+                    <label id="checkout-delivery-area-wrap" class="sm:col-span-2 block text-xs font-bold text-slate-300"><span data-key="checkout_area">منطقة التوصيل</span>
+                        <select id="checkout-delivery-area" required onchange="renderCart()" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100">
+                            <option value="">اختر المحافظة</option>
+                        </select>
+                    </label>
+                    <label class="sm:col-span-2 block text-xs font-bold text-slate-300"><span data-key="checkout_payment_method">طريقة الدفع</span><select id="checkout-payment-method" required onchange="updateCheckoutFulfillment()" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100">
+                        <option value="cash_on_delivery" data-key="checkout_cash_on_delivery">الدفع عند الاستلام</option>
+                        <option value="paymob" data-key="checkout_online_payment">الدفع الإلكتروني عبر Paymob</option>
+                    </select></label>
+                    <div id="checkout-electronic-payment-section" aria-hidden="true" class="sm:col-span-2 grid grid-rows-[0fr] opacity-0 pointer-events-none transition-[grid-template-rows,opacity] duration-300 ease-out">
+                        <div class="overflow-hidden min-h-0">
+                            <section class="rounded-2xl border border-cyan-500/25 bg-slate-950/80 p-4 space-y-3" dir="auto">
+                                <div>
+                                    <h4 class="text-sm font-black text-cyan-300" data-key="checkout_online_payment">الدفع الإلكتروني</h4>
+                                    <p class="mt-1 text-xs text-slate-400" data-key="checkout_payment_description">اختر وسيلة الدفع المناسبة لك</p>
+                                </div>
+                                <fieldset class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <legend class="sr-only" data-key="checkout_payment_description">اختر وسيلة الدفع المناسبة لك</legend>
+                                    <div class="sm:col-span-2 rounded-xl border border-slate-800 bg-slate-900 px-3 py-3 text-xs text-slate-300" data-key="checkout_payment_placeholder">سيتم اختيار البطاقة أو المحفظة بأمان داخل صفحة Paymob.</div>
+                                </fieldset>
+                                <p id="cart-payment-demo-note" aria-live="polite" class="hidden rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-[11px] text-amber-200"></p>
+                                <button type="button" onclick="checkoutCart()" class="w-full rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-4 py-2.5 text-xs font-black text-cyan-300 transition hover:bg-cyan-500/20" data-key="checkout_continue_payment">متابعة إلى Paymob</button>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between font-black text-slate-100">
+                    <span id="cart-total-label"></span><span id="cart-total" class="text-slate-200"></span>
+                </div>
+                <div class="flex items-center justify-between text-xs text-slate-400"><span id="cart-shipping-label"></span><span id="cart-shipping-fee"></span></div>
+                <div class="flex items-center justify-between font-black text-slate-100"><span id="cart-grand-total-label"></span><span id="cart-grand-total" class="text-cyan-400"></span></div>
+                <div id="cart-price-warning" class="hidden bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-xl p-3 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span data-price-warning></span><button onclick="acceptCurrentCartPrices()" class="font-bold underline"></button>
+                </div>
+                <div id="cart-payment-note" role="status" class="hidden rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2.5 text-[11px] leading-relaxed text-amber-200"></div>
+                <p id="cart-pickup-cash-note" class="hidden rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-[11px] text-slate-300"></p>
+                <p id="cart-error" class="hidden text-xs text-rose-400"></p>
+                <p id="checkout-validation-hint" role="status" class="hidden text-xs text-amber-300"></p>
+                <button id="cart-checkout-btn" onclick="checkoutCart()" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black py-3 rounded-xl transition shadow-lg"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Form: Login & Register -->
+    <div id="user-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5">
+            
+            <!-- Tab Selector -->
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div class="flex items-center gap-4 text-sm font-extrabold">
+                    <button type="button" id="modal-tab-login" onclick="switchAuthMode('login')" class="text-cyan-400 border-b-2 border-cyan-400 pb-1" data-key="modal_login_tab">تسجيل الدخول</button>
+                    <button type="button" id="modal-tab-register" onclick="switchAuthMode('register')" class="text-slate-400 hover:text-slate-200 pb-1" data-key="modal_register_tab">حساب جديد</button>
+                </div>
+                <button onclick="closeUserModal()" class="text-slate-400 hover:text-slate-100">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Global Error Box -->
+            <div id="global-error" class="hidden bg-rose-500/10 border border-rose-500/30 text-rose-400 p-3 rounded-xl text-xs font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="global-error-msg"></span>
+            </div>
+
+            <!-- FORM: LOGIN -->
+            <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4 text-xs" novalidate>
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300" data-key="lbl_login_id">البريد الإلكتروني أو الهاتف</label>
+                    <input type="text" id="login-identifier" data-ph-key="ph_login_id" placeholder="ادخل الإيميل أو رقم الهاتف" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-cyan-500 text-slate-100 transition duration-200">
+                    <p id="error-login-identifier" class="hidden text-rose-500 text-[11px] font-bold mt-1.5 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300" data-key="lbl_password">كلمة المرور</label>
+                    <div class="relative">
+                        <input type="password" id="login-password" placeholder="••••••••" required minlength="8" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 pl-10 focus:outline-none focus:border-cyan-500 text-slate-100 transition duration-200">
+                        <button type="button" onclick="togglePasswordVisibility('login-password', 'toggle-login-pass-icon')" class="password-toggle-btn absolute left-3 top-3 text-slate-400 hover:text-cyan-400 transition">
+                            <i id="toggle-login-pass-icon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <p id="error-login-password" class="hidden text-rose-500 text-[11px] font-bold mt-1.5 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                    </p>
+                </div>
+
+                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold py-3 rounded-xl shadow-lg transition" data-key="btn_login_submit">دخول</button>
+            </form>
+
+            <!-- FORM: REGISTER -->
+            <form id="register-form" onsubmit="handleUserSubmit(event)" class="hidden space-y-3 text-xs" novalidate>
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300" data-key="lbl_full_name">الاسم بالكامل</label>
+                    <input type="text" id="user-name" data-ph-key="ph_full_name" placeholder="أحمد محمد" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 focus:outline-none focus:border-cyan-500 text-slate-100 transition duration-200">
+                    <p id="error-user-name" class="hidden text-rose-500 text-[11px] font-bold mt-1 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300" data-key="lbl_email">البريد الإلكتروني</label>
+                    <input type="email" id="user-email" placeholder="name@example.com" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 focus:outline-none focus:border-cyan-500 text-slate-100 transition duration-200">
+                    <p id="error-user-email" class="hidden text-rose-500 text-[11px] font-bold mt-1 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300" data-key="lbl_phone">رقم الهاتف</label>
+                    <input type="tel" id="user-phone" placeholder="010xxxxxxxx" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 focus:outline-none focus:border-cyan-500 text-slate-100 transition duration-200">
+                    <p id="error-user-phone" class="hidden text-rose-500 text-[11px] font-bold mt-1 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300" data-key="lbl_password_hint">كلمة المرور (8 أحرف على الأقل)</label>
+                    <div class="relative">
+                        <input type="password" id="user-password" placeholder="••••••••" required minlength="8" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 pl-10 focus:outline-none focus:border-cyan-500 text-slate-100 transition duration-200">
+                        <button type="button" onclick="togglePasswordVisibility('user-password', 'toggle-reg-pass-icon')" class="password-toggle-btn absolute left-3 top-3 text-slate-400 hover:text-cyan-400 transition">
+                            <i id="toggle-reg-pass-icon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <p id="error-user-password" class="hidden text-rose-500 text-[11px] font-bold mt-1 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300" data-key="lbl_address">العنوان</label>
+                    <input type="text" id="user-address" data-ph-key="ph_address" placeholder="الإسكندرية - سموحة" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 focus:outline-none focus:border-cyan-500 text-slate-100 transition duration-200">
+                    <p id="error-user-address" class="hidden text-rose-500 text-[11px] font-bold mt-1 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-xmark"></i> <span></span>
+                    </p>
+                </div>
+
+                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold py-3 rounded-xl shadow-lg transition mt-2" data-key="btn_register_submit">إنشاء حساب جديد</button>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input || !icon) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
+
+    <!-- Script Logic -->
+    <script src="js/config.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/app.js?v=6"></script>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 left-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- FLOATING LIVE CHAT WIDGET -->
+    <div id="chat-widget-container" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <!-- Chat Window Box -->
+        <div id="chat-box" class="hidden w-80 sm:w-96 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden mb-4 transition-all duration-300">
+            <!-- Chat Header -->
+            <div class="bg-slate-950 p-3.5 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="relative">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-sm">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-slate-950 rounded-full"></span>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-black text-slate-100">خدمة العملاء والدعم الفني</h4>
+                        <p class="text-[10px] text-cyan-400 font-bold">متواجدون للمساعدة</p>
+                    </div>
+                </div>
+                <button onclick="toggleChatWidget()" class="text-slate-400 hover:text-slate-100 p-1.5 rounded-lg hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div id="chat-messages-container" class="p-4 h-72 overflow-y-auto space-y-3 text-xs bg-slate-950/50">
+                <div class="flex items-start gap-2 max-w-[85%]">
+                    <div class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 text-slate-200 p-3 rounded-2xl rounded-tr-none space-y-1">
+                        <p>أهلاً بك في <strong>MD Store</strong>! 👋 كيف يمكننا مساعدتك اليوم؟</p>
+                        <span class="text-[9px] text-slate-500 block text-left">الآن</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="p-2 border-t border-slate-800/60 bg-slate-900/40 flex items-center gap-1.5 overflow-x-auto text-[11px]">
+                <button type="button" onclick="sendQuickChatMessage('العنوان ومواعيد العمل')" class="bg-slate-950 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 px-2.5 py-1 rounded-lg shrink-0 transition">
+                    📍 العنوان
+                </button>
+                <button type="button" onclick="sendQuickChatMessage('طرق الدفع المتاحة')" class="bg-slate-950 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 px-2.5 py-1 rounded-lg shrink-0 transition">
+                    💳 طرق الدفع
+                </button>
+            </div>
+
+            <!-- Chat Input Form -->
+            <form id="chat-form" onsubmit="handleChatMessageSubmit(event)" class="p-2.5 bg-slate-950 border-t border-slate-800 flex items-center gap-2">
+                <input type="text" id="chat-input" placeholder="اكتب استفسارك هنا..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 transition">
+                <button type="submit" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 p-2 rounded-xl transition font-bold text-xs shrink-0 flex items-center justify-center w-9 h-9">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Chat Toggle Button -->
+        <button onclick="toggleChatWidget()" id="chat-toggle-btn" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 p-3.5 rounded-full shadow-2xl flex items-center justify-center transition transform hover:scale-105 group relative">
+            <i class="fa-solid fa-comments text-xl text-slate-950"></i>
+            <span id="chat-badge" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></span>
+            <span id="chat-badge-dot" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+        </button>
+    </div>
+
+    <!-- RATING & REVIEW MODAL -->
+    <div id="rating-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h3 class="text-base font-black text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-star text-amber-400"></i>
+                    <span>تقييم تجربتك مع MD Store</span>
+                </h3>
+                <button onclick="closeRatingModal()" class="text-slate-400 hover:text-slate-100">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="rating-form" onsubmit="handleRatingSubmit(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="rating-product-id" value="">
+                <div class="text-center space-y-2">
+                    <label id="rating-target-label" class="block font-bold text-slate-300">ما هو تقييمك لخدمتنا؟</label>
+                    <div class="flex items-center justify-center gap-2 text-2xl text-amber-400" id="star-rating-container">
+                        <i class="fa-solid fa-star cursor-pointer hover:scale-110 transition" onclick="setRatingStars(1)"></i>
+                        <i class="fa-solid fa-star cursor-pointer hover:scale-110 transition" onclick="setRatingStars(2)"></i>
+                        <i class="fa-solid fa-star cursor-pointer hover:scale-110 transition" onclick="setRatingStars(3)"></i>
+                        <i class="fa-solid fa-star cursor-pointer hover:scale-110 transition" onclick="setRatingStars(4)"></i>
+                        <i class="fa-solid fa-star cursor-pointer hover:scale-110 transition" onclick="setRatingStars(5)"></i>
+                    </div>
+                    <input type="hidden" id="rating-stars-val" value="5">
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-1 text-slate-300">تعليقك أو ملاحظاتك (اختياري)</label>
+                    <textarea id="rating-comment" rows="3" placeholder="اكتب رأيك بصراحة في جودة الأجهزة أو الصيانة..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:outline-none focus:border-cyan-500 text-slate-100"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl shadow-lg transition">
+                    إرسال التقييم
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
